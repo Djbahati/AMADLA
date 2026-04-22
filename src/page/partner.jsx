@@ -2,7 +2,14 @@ import { motion } from 'framer-motion';
 import { ExternalLink, Handshake } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const partners = [
+type Partner = {
+  name: string;
+  description: string;
+  focus: string;
+  color: string;
+};
+
+const partners: Partner[] = [
   {
     name: 'Sand Tech',
     description: 'Pioneering AI and machine learning solutions for smart energy grid optimization and predictive analytics across African infrastructure.',
@@ -32,11 +39,12 @@ const partners = [
 export default function Partners() {
   return (
     <div className="pt-24">
+      {/* Header */}
       <section className="py-20 bg-secondary/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-3xl mx-auto">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <Handshake className="h-8 w-8 text-accent" />
+              <Handshake className="h-8 w-8 text-accent" aria-label="Handshake icon" />
             </div>
             <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">
               Strategic <span className="text-accent">Partners</span>
@@ -48,18 +56,19 @@ export default function Partners() {
         </div>
       </section>
 
+      {/* Partner cards */}
       <section className="py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {partners.map((partner, i) => (
               <motion.div
-                key={i}
+                key={partner.name}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
                 whileHover={{ y: -4 }}
-                className="group bg-card rounded-2xl border border-border/50 overflow-hidden hover:shadow-xl transition-all"
+                className="group bg-card rounded-2xl border border-border/50 overflow-hidden hover:shadow-xl transition-all focus:outline-none focus:ring-2 focus:ring-accent"
               >
                 <div className={`h-2 bg-gradient-to-r ${partner.color}`} />
                 <div className="p-8">
@@ -90,7 +99,7 @@ export default function Partners() {
             </p>
             <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-heading rounded-xl px-8">
               Get in Touch
-              <ExternalLink className="ml-2 h-4 w-4" />
+              <ExternalLink className="ml-2 h-4 w-4" aria-label="External link icon" />
             </Button>
           </motion.div>
         </div>
