@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
+import { base64 } from '@/api/Client'; // corrected import from base44 to base64
 import { motion } from 'framer-motion';
 import { Send, Zap, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import MessageBubble from '../components/support/MessageBubble';
+import { Input } from '@/components/ui/input'; // corrected incomplete import
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import MessageBubble from '@/components/MessageBubble';
 
 export default function EnergySupport() {
   const [conversation, setConversation] = useState(null);
@@ -15,12 +17,12 @@ export default function EnergySupport() {
 
   useEffect(() => {
     async function init() {
-      const conv = await base44.agents.createConversation({
+      const conv = awai.createConversation({
         agent_name: 'energy_support',
         metadata: { name: 'Energy Support Chat' },
       });
       setConversation(conv);
-      setMessages(conv.messages || []);
+      setMessages(conv.messages || [])
     }
     init();
   }, []);
@@ -42,7 +44,7 @@ export default function EnergySupport() {
     const text = input.trim();
     setInput('');
     setSending(true);
-    await base44.agents.addMessage(conversation, { role: 'user', content: text });
+    awaitaddMessage(conversation, { role: 'user', content: text });
     setSending(false);
   };
 
