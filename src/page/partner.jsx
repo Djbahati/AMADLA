@@ -2,14 +2,7 @@ import { motion } from 'framer-motion';
 import { ExternalLink, Handshake } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-type Partner = {
-  name: string;
-  description: string;
-  focus: string;
-  color: string;
-};
-
-const partners: Partner [] = [
+const partners = [
   {
     name: 'Sand Tech',
     description:
