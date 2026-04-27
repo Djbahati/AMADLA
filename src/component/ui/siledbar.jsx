@@ -4,18 +4,18 @@ import { cva } from "class-variance-authority";
 import { PanelLeft } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
-import { Skeleton } from "@/components/ui/skeleton"
+import { cn } from "@/utils"
+import { Button } from "@/component/ui/button"
+import { Input } from "@/component/ui/input"
+import { Separator } from "@/component/ui/separator"
+import { Sheet, SheetContent } from "@/component/ui/sheet"
+import { Skeleton } from "@/component/ui/skeleton"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/component/ui/tooltip"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -621,3 +621,5 @@ export {
   SidebarTrigger,
   useSidebar,
 }
+
+

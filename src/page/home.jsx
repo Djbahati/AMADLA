@@ -1,6 +1,6 @@
-import HeroSection from '../components/home/HeroSection';
-import EnergyFlowSection from '../components/home/EnergyFlowSection';
-import ServicesSection from '../components/home/ServicesSection';
+import HeroSection from '../component/home/herosection';
+import EnergyFlowSection from '../component/home/energyflowsection';
+import ServicesSection from '../component/home/servicesection';
 
 export default function Home() {
   return (
@@ -11,3 +11,4 @@ export default function Home() {
     </div>
   );
 }
+

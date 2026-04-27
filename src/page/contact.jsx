@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
+import { base44 } from '@/api/client';
 import { Mail, Phone, MapPin, Send, Clock, CheckCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+import { Button } from '@/component/ui/button';
+import { Input } from '@/component/ui/input';
+import { Textarea } from '@/component/ui/textarea';
+import { Label } from '@/component/ui/label';
 import { toast } from 'sonner';
 
 export default function Contact() {
@@ -155,3 +155,4 @@ export default function Contact() {
     </div>
   );
 }
+

@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { base64 } from '@/api/Client'; // corrected import from base44 to base64
 import { motion } from 'framer-motion';
 import { Send, Zap, Bot } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input'; // corrected incomplete import
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import MessageBubble from '@/components/MessageBubble';
+import { Button } from '@/component/ui/button';
+import { Input } from '@/component/ui/input'; // corrected incomplete import
+import { ScrollArea } from '@/component/ui/scroll-area';
+import { Avatar, AvatarFallback, AvatarImage } from '@/component/ui/avatar';
+import MessageBubble from '@/component/support/messagebubble';
 
 export default function EnergySupport() {
   const [conversation, setConversation] = useState(null);
@@ -118,3 +118,4 @@ export default function EnergySupport() {
     </div>
   );
 }
+

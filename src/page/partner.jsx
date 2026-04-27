@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ExternalLink, Handshake } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/component/ui/button';
 
 const partners = [
   {
@@ -119,3 +119,4 @@ export default function Partners() {
     </div>
   );
 }
+

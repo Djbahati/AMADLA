@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { base44 } from '@/api/Client';
 import { motion } from 'framer-motion';
 import { Shield, User, Wrench } from 'lucide-react';
-import StatsGrid from '../components/dashboard/StatsGrid';
-import EnergyCharts from '../components/dashboard/EnergyCharts';
-import TeamChat from '../components/dashboard/TeamChat';
-import NotificationsPanel from '../components/dashboard/NotificationsPanel';
+import StatsGrid from '../component/dashboard/statsgrid';
+import EnergyCharts from '../component/dashboard/energychat';
+import TeamChat from '../component/dashboard/teamchat';
+import NotificationsPanel from '../component/dashboard/notificationpanel';
 
 const roleBadges = {
   admin: { icon: Shield, label: 'Administrator', color: 'bg-accent/10 text-accent' },
@@ -66,3 +66,4 @@ export default function Dashboard() {
     </div>
   );
 }
+

@@ -10,8 +10,8 @@ import {
   TrendingDown,
   Activity,
 } from 'lucide-react';
-import EnergyFlowDiagram from '../components/energy/EnergyFlowDiagram';
-import DataIndicatorCard from '../components/energy/DataIndicatorCard';
+import EnergyFlowDiagram from '../component/energy/EnergyFlowDiagram';
+import DataIndicatorCard from '../component/energy/DataIndicatorCard';
 
 function generateData() {
   return {
@@ -188,3 +188,4 @@ export default function EnergySystems() {
     </div>
   );
 }
+

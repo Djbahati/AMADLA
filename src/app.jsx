@@ -1,21 +1,21 @@
 import { useEffect } from 'react'
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/component/ui/toaster"
 import { QueryClientProvider } from "@tanstack/react-query"
 import { queryClientInstance } from "@/lib/query-client"
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
 
-import { AuthProvider, useAuth } from "@/lib/AuthContext"
-import UserNotRegisteredError from "@/components/UserNotRegisteredError"
-import Layout from "./components/layout/Layout"
+import { AuthProvider, useAuth } from "@/libs/authcontext"
+import UserNotRegisteredError from "@/component/UserNotRegisteredError"
+import Layout from "./component/layout/layout"
 
-import Home from "./pages/Home"
-import About from "./pages/About"
-import EnergySystems from "./pages/EnergySystems"
-import Dashboard from "./pages/Dashboard"
-import Partners from "./pages/Partners"
-import Contact from "./pages/Contact"
-import EnergySupport from "./pages/EnergySupport"
-import PageNotFound from "./lib/PageNotFound"
+import Home from "./page/home"
+import About from "./page/about"
+import EnergySystems from "./page/energysystems"
+import Dashboard from "./page/dashboard"
+import Partners from "./page/partner"
+import Contact from "./page/contact"
+import EnergySupport from "./page/energysupport"
+import PageNotFound from "./libs/PageNotFound"
 
 const AuthenticatedApp = () => {
   const {
@@ -78,3 +78,5 @@ function App() {
 }
 
 export default App
+
+

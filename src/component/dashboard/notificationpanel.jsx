@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Bell, AlertTriangle, Info, CheckCircle, XCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/component/ui/button';
 
 const typeIcons = {
   alert: XCircle,
@@ -115,3 +115,4 @@ export default function NotificationsPanel() {
     </div>
   );
 }
+

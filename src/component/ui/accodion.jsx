@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Target, Eye, Sparkles } from 'lucide-react';
-import LeadershipCard from '../components/about/LeadershipCard';
-import Timeline from '../components/about/Timeline';
+import LeadershipCard from '../component/about/LeadershipCard';
+import Timeline from '../component/about/Timeline';
 
 const leaders = [
   { name: 'ENG. BAHATI Pierre', role: 'CEO & Founder', image: 'https://media.base44.com/images/public/69d61490c27eb799c26fa5f3/03e0cacde_PETER.jpg' },

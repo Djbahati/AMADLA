@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Zap, Sun, Activity } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/component/ui/button';
 import { Link } from 'react-router-dom';
 
 export default function HeroSection() {
@@ -62,3 +62,4 @@ export default function HeroSection() {
     </section>
   );
 }
+

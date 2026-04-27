@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
+import { base44 } from '@/api/client';
 import { Send, MessageCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/component/ui/button';
+import { Input } from '@/component/ui/input';
 
-export default function TeamChat() {
+export default function DataIndicatorCard() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [user, setUser] = useState(null);
@@ -101,3 +101,4 @@ export default function TeamChat() {
     </div>
   );
 }
+

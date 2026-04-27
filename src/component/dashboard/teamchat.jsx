@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { client } from '@/api/Client';
 import { Send, MessageCircle } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/component/ui/button';
+import { Input } from '@/component/ui/input';
 import { exp } from 'prelude-ls';
 
-export default function TeamChat() {
+export default function DataIndicatorCard() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [user, setUser] = useState(null);
@@ -77,3 +77,4 @@ export default function TeamChat() {
     </div>
   );
 }
+

@@ -1,5 +1,5 @@
 import ReactMarkdown from 'react-markdown';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils';
 import { Loader2 } from 'lucide-react';
 
 export default function MessageBubble({ message }) {

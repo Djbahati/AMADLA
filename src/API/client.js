@@ -1,5 +1,5 @@
 import { createClient } from '/sdk';
-import { appParams } from '@/lib/app-params';
+import { appParams } from '@/libs/app-params';
 
 const { appId, token, functionsVersion, appBaseUrl } = appParams;
 
@@ -12,3 +12,4 @@ export const client = createClient({
   requiresAuth: false,
   appBaseUrl
 });
+
