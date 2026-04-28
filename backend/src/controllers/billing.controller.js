@@ -106,42 +106,73 @@ export async function payBill(req, res) {
   const parsed = paymentSchema.safeParse(req.body);
   if (!parsed.success) return fail(res, "Validation failed", 422, parsed.error.flatten());
 
-  const bill = await prisma.bill.findUnique({ where: { id: parsed.data.billId } });
-  if (!bill) return fail(res, "Bill not found", 404);
-  if (req.user.role === "USER" && bill.userId !== req.user.id) return fail(res, "Forbidden", 403);
-  if (Number(bill.outstandingBalance) <= 0) return fail(res, "Bill is already fully paid", 400);
-  if (parsed.data.amount > Number(bill.outstandingBalance)) {
-    return fail(res, "Payment amount cannot exceed outstanding balance", 422);
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      const bill = await tx.bill.findUnique({ where: { id: parsed.data.billId } });
+      if (!bill) {
+        const error = new Error("Bill not found");
+        error.statusCode = 404;
+        throw error;
+      }
+      if (req.user.role === "USER" && bill.userId !== req.user.id) {
+        const error = new Error("Forbidden");
+        error.statusCode = 403;
+        throw error;
+      }
+      if (Number(bill.outstandingBalance) <= 0) {
+        const error = new Error("Bill is already fully paid");
+        error.statusCode = 400;
+        throw error;
+      }
+      if (parsed.data.amount > Number(bill.outstandingBalance)) {
+        const error = new Error("Payment amount cannot exceed outstanding balance");
+        error.statusCode = 422;
+        throw error;
+      }
+
+      const newAmountPaid = calculateMoney(Number(bill.amountPaid) + parsed.data.amount);
+      const outstanding = calculateMoney(Math.max(0, Number(bill.amountDue) - newAmountPaid));
+      const status = computeBillStatus(Number(bill.amountDue), newAmountPaid, bill.dueDate);
+
+      // Optimistic concurrency guard: only update if snapshot is unchanged.
+      const updated = await tx.bill.updateMany({
+        where: {
+          id: bill.id,
+          amountPaid: bill.amountPaid,
+          outstandingBalance: bill.outstandingBalance,
+        },
+        data: {
+          amountPaid: newAmountPaid,
+          outstandingBalance: outstanding,
+          status,
+        },
+      });
+
+      if (updated.count !== 1) {
+        const error = new Error("Bill was updated by another payment. Please retry.");
+        error.statusCode = 409;
+        throw error;
+      }
+
+      const payment = await tx.payment.create({
+        data: {
+          billId: bill.id,
+          userId: bill.userId,
+          amount: parsed.data.amount,
+          paymentMethod: parsed.data.paymentMethod,
+          transactionRef: `PAY-${Date.now()}-${Math.floor(Math.random() * 1000000)}`,
+        },
+      });
+
+      const updatedBill = await tx.bill.findUnique({ where: { id: bill.id } });
+      return { payment, updatedBill };
+    });
+
+    return ok(res, result, "Payment recorded");
+  } catch (error) {
+    if (error.statusCode) return fail(res, error.message, error.statusCode);
+    throw error;
   }
-
-  const newAmountPaid = calculateMoney(Number(bill.amountPaid) + parsed.data.amount);
-  const outstanding = calculateMoney(Math.max(0, Number(bill.amountDue) - newAmountPaid));
-  const status = computeBillStatus(Number(bill.amountDue), newAmountPaid, bill.dueDate);
-
-  const result = await prisma.$transaction(async (tx) => {
-    const payment = await tx.payment.create({
-      data: {
-        billId: bill.id,
-        userId: bill.userId,
-        amount: parsed.data.amount,
-        paymentMethod: parsed.data.paymentMethod,
-        transactionRef: `PAY-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-      },
-    });
-
-    const updatedBill = await tx.bill.update({
-      where: { id: bill.id },
-      data: {
-        amountPaid: newAmountPaid,
-        outstandingBalance: outstanding,
-        status,
-      },
-    });
-
-    return { payment, updatedBill };
-  });
-
-  return ok(res, result, "Payment recorded");
 }
 
 export async function paymentHistory(req, res) {
