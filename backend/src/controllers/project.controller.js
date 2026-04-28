@@ -15,7 +15,8 @@ const projectSchema = z.object({
 export async function createProject(req, res) {
   const parsed = projectSchema.safeParse(req.body);
   if (!parsed.success) return fail(res, "Validation failed", 422, parsed.error.flatten());
-  const project = await prisma.project.create({ data: parsed.data });
+  const payload = { ...parsed.data, name: parsed.data.name.trim(), location: parsed.data.location.trim() };
+  const project = await prisma.project.create({ data: payload });
   return ok(res, project, "Project created", 201);
 }
 
@@ -31,6 +32,12 @@ export async function assignUserToProject(req, res) {
   const { projectId } = req.params;
   const payload = z.object({ userId: z.string().min(1) }).safeParse(req.body);
   if (!payload.success) return fail(res, "Validation failed", 422, payload.error.flatten());
+  const [project, user] = await Promise.all([
+    prisma.project.findUnique({ where: { id: projectId }, select: { id: true, isActive: true } }),
+    prisma.user.findUnique({ where: { id: payload.data.userId }, select: { id: true, isActive: true } }),
+  ]);
+  if (!project || !project.isActive) return fail(res, "Project not found or inactive", 404);
+  if (!user || !user.isActive) return fail(res, "User not found or inactive", 404);
 
   const link = await prisma.userProject.upsert({
     where: { userId_projectId: { userId: payload.data.userId, projectId } },

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { prisma } from "../config/prisma.js";
 import { fail, ok } from "../utils/apiResponse.js";
-import { computeBillStatus } from "../utils/billing.js";
+import { calculateMoney, computeBillStatus } from "../utils/billing.js";
 import { createAlert } from "../services/alertService.js";
 
 const billSchema = z.object({
@@ -22,31 +22,54 @@ export async function generateBill(req, res) {
   const parsed = billSchema.safeParse(req.body);
   if (!parsed.success) return fail(res, "Validation failed", 422, parsed.error.flatten());
 
-  const project = await prisma.project.findUnique({ where: { id: parsed.data.projectId } });
+  const periodStart = new Date(parsed.data.periodStart);
+  const periodEnd = new Date(parsed.data.periodEnd);
+  const dueDate = new Date(parsed.data.dueDate);
+  if (periodStart >= periodEnd) return fail(res, "periodStart must be before periodEnd", 422);
+  if (dueDate < periodEnd) return fail(res, "dueDate must be on or after periodEnd", 422);
+
+  const [project, assignment, existingBill] = await Promise.all([
+    prisma.project.findUnique({ where: { id: parsed.data.projectId } }),
+    prisma.userProject.findUnique({
+      where: {
+        userId_projectId: { userId: parsed.data.userId, projectId: parsed.data.projectId },
+      },
+    }),
+    prisma.bill.findFirst({
+      where: {
+        userId: parsed.data.userId,
+        projectId: parsed.data.projectId,
+        periodStart,
+        periodEnd,
+      },
+    }),
+  ]);
   if (!project) return fail(res, "Project not found", 404);
+  if (!assignment) return fail(res, "User is not assigned to this project", 400);
+  if (existingBill) return fail(res, "Bill for this project/user/period already exists", 409);
 
   const usageRows = await prisma.energyUsage.findMany({
     where: {
       userId: parsed.data.userId,
       projectId: parsed.data.projectId,
       usageDate: {
-        gte: new Date(parsed.data.periodStart),
-        lte: new Date(parsed.data.periodEnd),
+        gte: periodStart,
+        lte: periodEnd,
       },
     },
   });
 
-  const totalUsageKwh = usageRows.reduce((sum, row) => sum + Number(row.consumedKwh), 0);
-  const unitPrice = Number(project.pricePerUnit);
-  const amountDue = totalUsageKwh * unitPrice;
+  const totalUsageKwh = calculateMoney(usageRows.reduce((sum, row) => sum + Number(row.consumedKwh), 0));
+  const unitPrice = calculateMoney(project.pricePerUnit);
+  const amountDue = calculateMoney(totalUsageKwh * unitPrice);
 
   const bill = await prisma.bill.create({
     data: {
       userId: parsed.data.userId,
       projectId: parsed.data.projectId,
-      periodStart: new Date(parsed.data.periodStart),
-      periodEnd: new Date(parsed.data.periodEnd),
-      dueDate: new Date(parsed.data.dueDate),
+      periodStart,
+      periodEnd,
+      dueDate,
       totalUsageKwh,
       unitPrice,
       amountDue,
@@ -86,9 +109,13 @@ export async function payBill(req, res) {
   const bill = await prisma.bill.findUnique({ where: { id: parsed.data.billId } });
   if (!bill) return fail(res, "Bill not found", 404);
   if (req.user.role === "USER" && bill.userId !== req.user.id) return fail(res, "Forbidden", 403);
+  if (Number(bill.outstandingBalance) <= 0) return fail(res, "Bill is already fully paid", 400);
+  if (parsed.data.amount > Number(bill.outstandingBalance)) {
+    return fail(res, "Payment amount cannot exceed outstanding balance", 422);
+  }
 
-  const newAmountPaid = Number(bill.amountPaid) + parsed.data.amount;
-  const outstanding = Math.max(0, Number(bill.amountDue) - newAmountPaid);
+  const newAmountPaid = calculateMoney(Number(bill.amountPaid) + parsed.data.amount);
+  const outstanding = calculateMoney(Math.max(0, Number(bill.amountDue) - newAmountPaid));
   const status = computeBillStatus(Number(bill.amountDue), newAmountPaid, bill.dueDate);
 
   const result = await prisma.$transaction(async (tx) => {

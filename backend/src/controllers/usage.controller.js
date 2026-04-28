@@ -15,8 +15,16 @@ export async function recordUsage(req, res) {
   const parsed = usageSchema.safeParse(req.body);
   if (!parsed.success) return fail(res, "Validation failed", 422, parsed.error.flatten());
 
-  const project = await prisma.project.findUnique({ where: { id: parsed.data.projectId } });
+  const [project, assignment] = await Promise.all([
+    prisma.project.findUnique({ where: { id: parsed.data.projectId } }),
+    prisma.userProject.findUnique({
+      where: {
+        userId_projectId: { userId: parsed.data.userId, projectId: parsed.data.projectId },
+      },
+    }),
+  ]);
   if (!project) return fail(res, "Project not found", 404);
+  if (!assignment) return fail(res, "User must be assigned to this project before usage recording", 400);
 
   const usage = await prisma.energyUsage.create({
     data: {
