@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  OPERATOR
+  USER
+}
+
+enum ProjectType {
+  SOLAR
+  GRID
+  HYBRID
+}
+
+enum BillStatus {
+  PENDING
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+}
+
+enum AlertType {
+  LOW_PRODUCTION
+  OVERUSE
+  PAYMENT_DUE
+}
+
+model User {
+  id            String            @id @default(cuid())
+  fullName      String
+  email         String            @unique
+  passwordHash  String
+  role          UserRole          @default(USER)
+  isActive      Boolean           @default(true)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  usages        EnergyUsage[]
+  bills         Bill[]            @relation("UserBills")
+  payments      Payment[]
+  projectLinks  UserProject[]
+  alerts        Alert[]           @relation("UserAlerts")
+
+  @@index([role])
+  @@index([isActive])
+}
+
+model Project {
+  id                 String        @id @default(cuid())
+  name               String
+  location           String
+  capacityKwh        Decimal       @db.Decimal(12, 2)
+  pricePerUnit       Decimal       @db.Decimal(10, 2)
+  lowProductionLimit Decimal       @default(50) @db.Decimal(10, 2)
+  overuseLimit       Decimal       @default(120) @db.Decimal(10, 2)
+  type               ProjectType
+  isActive           Boolean       @default(true)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  usages             EnergyUsage[]
+  bills              Bill[]
+  userLinks          UserProject[]
+  alerts             Alert[]       @relation("ProjectAlerts")
+
+  @@unique([name, location])
+  @@index([type])
+  @@index([isActive])
+}
+
+model UserProject {
+  id         String   @id @default(cuid())
+  userId     String
+  projectId  String
+  assignedAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+  @@index([projectId])
+}
+
+model EnergyUsage {
+  id                 String   @id @default(cuid())
+  userId             String
+  projectId          String
+  usageDate          DateTime
+  consumedKwh        Decimal  @db.Decimal(12, 2)
+  producedKwh        Decimal  @db.Decimal(12, 2)
+  recordedById       String?
+  createdAt          DateTime @default(now())
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project            Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId, usageDate])
+  @@index([projectId, usageDate])
+  @@index([userId, usageDate])
+}
+
+model Bill {
+  id                 String     @id @default(cuid())
+  userId             String
+  projectId          String
+  periodStart        DateTime
+  periodEnd          DateTime
+  totalUsageKwh      Decimal    @db.Decimal(12, 2)
+  unitPrice          Decimal    @db.Decimal(10, 2)
+  amountDue          Decimal    @db.Decimal(12, 2)
+  amountPaid         Decimal    @default(0) @db.Decimal(12, 2)
+  outstandingBalance Decimal    @db.Decimal(12, 2)
+  status             BillStatus @default(PENDING)
+  dueDate            DateTime
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  user               User       @relation("UserBills", fields: [userId], references: [id], onDelete: Cascade)
+  project            Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  payments           Payment[]
+
+  @@index([userId, status])
+  @@index([projectId, dueDate])
+}
+
+model Payment {
+  id             String   @id @default(cuid())
+  billId          String
+  userId          String
+  amount          Decimal  @db.Decimal(12, 2)
+  paymentMethod   String
+  transactionRef  String   @unique
+  paidAt          DateTime @default(now())
+  createdAt       DateTime @default(now())
+  bill            Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, paidAt])
+  @@index([billId])
+}
+
+model Alert {
+  id          String    @id @default(cuid())
+  userId      String?
+  projectId   String?
+  type        AlertType
+  message     String
+  isResolved  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  user        User?     @relation("UserAlerts", fields: [userId], references: [id], onDelete: SetNull)
+  project     Project?  @relation("ProjectAlerts", fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([isResolved, type])
+  @@index([projectId, createdAt])
+}
