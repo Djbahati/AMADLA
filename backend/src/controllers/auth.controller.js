@@ -1,9 +1,8 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { prisma } from "../config/prisma.js";
-import { env } from "../config/env.js";
 import { fail, ok } from "../utils/apiResponse.js";
+import { generateTokens } from "../utils/jwt.js";
 
 const registerSchema = z.object({
   fullName: z.string().min(2),
@@ -15,13 +14,6 @@ const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
 });
-
-function signToken(user) {
-  return jwt.sign({ role: user.role, email: user.email }, env.jwtSecret, {
-    expiresIn: env.jwtExpiresIn,
-    subject: user.id,
-  });
-}
 
 export async function register(req, res) {
   const parsed = registerSchema.safeParse(req.body);
@@ -38,8 +30,13 @@ export async function register(req, res) {
     select: { id: true, fullName: true, email: true, role: true },
   });
 
-  const token = signToken(user);
-  return ok(res, { token, user }, "User registered", 201);
+  const { accessToken, refreshToken } = generateTokens(user);
+  return ok(
+    res,
+    { accessToken, refreshToken, user },
+    "User registered successfully",
+    201
+  );
 }
 
 export async function login(req, res) {
@@ -50,14 +47,20 @@ export async function login(req, res) {
   const email = parsed.data.email.toLowerCase().trim();
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) return fail(res, "Invalid credentials", 401);
-  if (!user.isActive) return fail(res, "Account is inactive", 403);
-
-  const isValid = await bcrypt.compare(password, user.passwordHash);
-  if (!isValid) return fail(res, "Invalid credentials", 401);
-
-  const token = signToken(user);
+  if (!u{ accessToken, refreshToken } = generateTokens(user);
   return ok(
     res,
+    {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        role: user.role,
+      },
+    },
+    "Login successful"
     {
       token,
       user: { id: user.id, fullName: user.fullName, email: user.email, role: user.role },
