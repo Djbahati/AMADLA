@@ -1,4 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @layer base {
   :root {
     --font-heading: 'Space Grotesk', sans-serif;
@@ -6,7 +11,7 @@
 
     /* Light mode colors */
     --background: 47 83% 9%;
-    --foreground: 220 25% 10%;
+    --background-foreground: 220 25% 10%;
 
     --card: 178 69% 20%;
     --card-foreground: 220 25% 10%;
