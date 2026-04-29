@@ -4,9 +4,9 @@ Production-ready full-stack platform for managing energy projects, customer usag
 
 ## Tech Stack
 
-- Backend: Node.js + Express
+- Backend: Node.js + Express + SQLite (changed from PostgreSQL for easier setup)
 - Frontend: React (Vite) + Tailwind CSS
-- Database: PostgreSQL + Prisma ORM
+- Database: SQLite + Prisma ORM (changed from PostgreSQL)
 - Auth: JWT
 
 ## Project Structure
@@ -21,7 +21,7 @@ Production-ready full-stack platform for managing energy projects, customer usag
 ```bash
 cd backend
 npm install
-cp .env.example .env
+cp .env.example .env  # Note: Database changed to SQLite for easier setup
 npm run prisma:generate
 npm run prisma:migrate
 npm run prisma:seed

@@ -16,8 +16,6 @@
     "typecheck": "tsc -p ./jsconfig.json"
   },
   "dependencies": {
-    "@client/sdk": "^0.8.26",
-    "@client/vite-plugin": "^1.0.10",
     "@hello-pangea/dnd": "^17.0.0",
     "@hookform/resolvers": "^4.1.2",
 

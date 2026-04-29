@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 enum UserRole {
@@ -55,10 +55,10 @@ model Project {
   id                 String        @id @default(cuid())
   name               String
   location           String
-  capacityKwh        Decimal       @db.Decimal(12, 2)
-  pricePerUnit       Decimal       @db.Decimal(10, 2)
-  lowProductionLimit Decimal       @default(50) @db.Decimal(10, 2)
-  overuseLimit       Decimal       @default(120) @db.Decimal(10, 2)
+  capacityKwh        Float
+  pricePerUnit       Float
+  lowProductionLimit Float         @default(50)
+  overuseLimit       Float         @default(120)
   type               ProjectType
   isActive           Boolean       @default(true)
   createdAt          DateTime      @default(now())
@@ -90,8 +90,8 @@ model EnergyUsage {
   userId             String
   projectId          String
   usageDate          DateTime
-  consumedKwh        Decimal  @db.Decimal(12, 2)
-  producedKwh        Decimal  @db.Decimal(12, 2)
+  consumedKwh        Float
+  producedKwh        Float
   recordedById       String?
   createdAt          DateTime @default(now())
   user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -108,11 +108,11 @@ model Bill {
   projectId          String
   periodStart        DateTime
   periodEnd          DateTime
-  totalUsageKwh      Decimal    @db.Decimal(12, 2)
-  unitPrice          Decimal    @db.Decimal(10, 2)
-  amountDue          Decimal    @db.Decimal(12, 2)
-  amountPaid         Decimal    @default(0) @db.Decimal(12, 2)
-  outstandingBalance Decimal    @db.Decimal(12, 2)
+  totalUsageKwh      Float
+  unitPrice          Float
+  amountDue          Float
+  amountPaid         Float      @default(0)
+  outstandingBalance Float
   status             BillStatus @default(PENDING)
   dueDate            DateTime
   createdAt          DateTime   @default(now())
@@ -129,7 +129,7 @@ model Payment {
   id             String   @id @default(cuid())
   billId          String
   userId          String
-  amount          Decimal  @db.Decimal(12, 2)
+  amount          Float
   paymentMethod   String
   transactionRef  String   @unique
   paidAt          DateTime @default(now())

@@ -22,13 +22,16 @@ function FlowNode({ icon: Icon, label, value, color, delay }) {
 function AnimatedConnector({ direction = 'right' }) {
   return (
     <div className="flex items-center px-2">
-      <div className="relative w-16 h-0.5 bg-border overflow-hidden rounded-full">
-        <motion.div
-          className="absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-transparent via-accent to-transparent rounded-full"
-          animate={{ x: ['-24px', '64px'] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+      <svg width="64" height="4" viewBox="0 0 64 4" className="overflow-visible">
+        <path
+          d="M0 2 L64 2"
+          stroke="hsl(var(--accent))"
+          strokeWidth="2"
+          strokeDasharray="8 4"
+          className="animate-flow-line"
+          fill="none"
         />
-      </div>
+      </svg>
       <Zap className="h-3 w-3 text-accent -ml-1" />
     </div>
   );
@@ -77,17 +80,31 @@ export default function EnergyFlowDiagram({ data }) {
           <FlowNode icon={Flame} label="Thermal" value={`${data.thermalOutput} GW`} color="bg-orange-500/15 text-orange-500" delay={0.2} />
         </div>
         <div className="flex justify-center">
-          <div className="w-0.5 h-8 bg-border relative overflow-hidden">
-            <motion.div className="absolute w-full h-3 bg-accent/50" animate={{ y: ['-12px', '32px'] }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} />
-          </div>
+          <svg width="4" height="32" viewBox="0 0 4 32" className="overflow-visible">
+            <path
+              d="M2 0 L2 32"
+              stroke="hsl(var(--accent))"
+              strokeWidth="2"
+              strokeDasharray="8 4"
+              className="animate-flow-line"
+              fill="none"
+            />
+          </svg>
         </div>
         <div className="flex justify-center">
           <FlowNode icon={Zap} label="Substation" value={`${data.voltage}V`} color="bg-accent/15 text-accent" delay={0.3} />
         </div>
         <div className="flex justify-center">
-          <div className="w-0.5 h-8 bg-border relative overflow-hidden">
-            <motion.div className="absolute w-full h-3 bg-accent/50" animate={{ y: ['-12px', '32px'] }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} />
-          </div>
+          <svg width="4" height="32" viewBox="0 0 4 32" className="overflow-visible">
+            <path
+              d="M2 0 L2 32"
+              stroke="hsl(var(--accent))"
+              strokeWidth="2"
+              strokeDasharray="8 4"
+              className="animate-flow-line"
+              fill="none"
+            />
+          </svg>
         </div>
         <div className="text-center text-sm font-heading font-semibold text-muted-foreground mb-2">Distribution</div>
         <div className="flex justify-center gap-4">
