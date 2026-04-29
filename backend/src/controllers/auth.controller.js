@@ -47,25 +47,18 @@ export async function login(req, res) {
   const email = parsed.data.email.toLowerCase().trim();
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) return fail(res, "Invalid credentials", 401);
-  if (!u{ accessToken, refreshToken } = generateTokens(user);
+  const valid = await bcrypt.compare(password, user.passwordHash);
+  if (!valid) return fail(res, "Invalid credentials", 401);
+
+  const { accessToken, refreshToken } = generateTokens(user);
   return ok(
     res,
     {
       accessToken,
       refreshToken,
-      user: {
-        id: user.id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role,
-      },
-    },
-    "Login successful"
-    {
-      token,
       user: { id: user.id, fullName: user.fullName, email: user.email, role: user.role },
     },
-    "Login successful",
+    "Login successful"
   );
 }
 
