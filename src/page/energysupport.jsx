@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { base64 } from '@/api/Client'; // corrected import from base44 to base64
+import { base44 } from '@/API/Client';
 import { motion } from 'framer-motion';
 import { Send, Zap, Bot } from 'lucide-react';
 import { Button } from '@/component/ui/button';
@@ -17,12 +17,12 @@ export default function EnergySupport() {
 
   useEffect(() => {
     async function init() {
-      const conv = awai.createConversation({
+      const conv = await base44.agents.createConversation({
         agent_name: 'energy_support',
         metadata: { name: 'Energy Support Chat' },
       });
       setConversation(conv);
-      setMessages(conv.messages || [])
+      setMessages(conv.messages || []);
     }
     init();
   }, []);
@@ -44,7 +44,7 @@ export default function EnergySupport() {
     const text = input.trim();
     setInput('');
     setSending(true);
-    awaitaddMessage(conversation, { role: 'user', content: text });
+    await base44.agents.addMessage(conversation, { role: 'user', content: text });
     setSending(false);
   };
 

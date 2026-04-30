@@ -16,23 +16,53 @@ export default function Footer() {
             </p>
           </div>
 
-                    <div>
-                      <h4 className="font-heading font-semibold mb-4">Quick Links</h4>
-                      <div className="space-y-2">
-                        {['About', 'Energy Systems', 'Dashboard', 'Partners', 'Contact'].map((link) => (
-                          <Link
-                            key={link}
-                            to={`/${link.toLowerCase().replace(' ', '-')}`}
-                            className="block text-sm text-primary-foreground/70 hover:text-accent transition-colors"
-                          >
-                            {link}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </footer>
-            );
-          }
+          <div>
+            <h4 className="font-heading font-semibold mb-4">Quick Links</h4>
+            <div className="space-y-2">
+              {['About', 'Energy Systems', 'Dashboard', 'Partners', 'Contact'].map((link) => (
+                <Link
+                  key={link}
+                  to={`/${link.toLowerCase().replace(' ', '-')}`}
+                  className="block text-sm text-primary-foreground/70 hover:text-accent transition-colors"
+                >
+                  {link}
+                </Link>
+              ))}
+            </div>
+          </div>
 
+          <div>
+            <h4 className="font-heading font-semibold mb-4">Contact</h4>
+            <div className="space-y-3">
+              <a href="mailto:amandlaa520@gmail.com" className="flex items-center gap-2 text-sm text-primary-foreground/70 hover:text-accent transition-colors">
+                <Mail className="h-4 w-4 shrink-0" />
+                amandlaa520@gmail.com
+              </a>
+              <a href="tel:+250799306970" className="flex items-center gap-2 text-sm text-primary-foreground/70 hover:text-accent transition-colors">
+                <Phone className="h-4 w-4 shrink-0" />
+                +250 799 306 970
+              </a>
+              <div className="flex items-center gap-2 text-sm text-primary-foreground/70">
+                <MapPin className="h-4 w-4 shrink-0" />
+                Kigali, Rwanda
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-heading font-semibold mb-4">Legal</h4>
+            <div className="space-y-2">
+              {['Privacy Policy', 'Terms of Service'].map((item) => (
+                <p key={item} className="text-sm text-primary-foreground/70">{item}</p>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-12 pt-8 border-t border-primary-foreground/10 text-center text-sm text-primary-foreground/50">
+          © {new Date().getFullYear()} Amadla Energy Group. All rights reserved.
+        </div>
+      </div>
+    </footer>
+  );
+}

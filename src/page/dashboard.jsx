@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { base44 } from '@/api/Client';
+import { useAuth } from '@/context/AuthContext';
 import { motion } from 'framer-motion';
 import { Shield, User, Wrench } from 'lucide-react';
 import StatsGrid from '../component/dashboard/statsgrid';
@@ -8,20 +7,16 @@ import TeamChat from '../component/dashboard/teamchat';
 import NotificationsPanel from '../component/dashboard/notificationpanel';
 
 const roleBadges = {
-  admin: { icon: Shield, label: 'Administrator', color: 'bg-accent/10 text-accent' },
-  engineer: { icon: Wrench, label: 'Engineer', color: 'bg-energy-blue/10 text-energy-blue' },
-  analyst: { icon: User, label: 'Analyst', color: 'bg-energy-green/10 text-energy-green' },
+  ADMIN: { icon: Shield, label: 'Administrator', color: 'bg-accent/10 text-accent' },
+  OPERATOR: { icon: Wrench, label: 'Operator', color: 'bg-energy-blue/10 text-energy-blue' },
+  USER: { icon: User, label: 'User', color: 'bg-energy-green/10 text-energy-green' },
 };
 
 export default function Dashboard() {
-  const [user, setUser] = useState(null);
+  const { user } = useAuth();
 
-  useEffect(() => {
-    baseauth.me().then(setUser);
-  }, []);
-
-  const role = user?.role || 'analyst';
-  const badge = roleBadges[role] || roleBadges.analyst;
+  const role = user?.role || 'USER';
+  const badge = roleBadges[role] || roleBadges.USER;
   const BadgeIcon = badge.icon;
 
   return (
@@ -36,7 +31,7 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="font-heading text-3xl font-bold">
-                Welcome back{user?.full_name ? `, ${user.full_name}` : ''}
+                Welcome back{user?.fullName ? `, ${user.fullName}` : ''}
               </h1>
               <p className="text-muted-foreground mt-1">Energy monitoring dashboard — real-time analytics</p>
             </div>
