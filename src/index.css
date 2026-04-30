@@ -2,7 +2,7 @@
 
 @tailwind base;
 @tailwind components;
-@ta2ilwind utilities;
+@tailwind utilities;
 
 @layer base {
   :root {
