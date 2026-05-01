@@ -1,118 +1,92 @@
 import { useState, useEffect } from 'react';
-import { Bell, AlertTriangle, Info, CheckCircle, XCircle } from 'lucide-react';
+import { Bell, AlertTriangle, Info, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/component/ui/button';
+import { apiClient } from '@/utils/apiClient';
 
-const typeIcons = {
-  alert: XCircle,
-  warning: AlertTriangle,
-  info: Info,
-  success: CheckCircle,
+const typeMap = {
+  LOW_PRODUCTION: { icon: AlertTriangle, color: 'text-energy-amber bg-energy-amber/10', label: 'Low Production' },
+  OVERUSE: { icon: XCircle, color: 'text-energy-red bg-energy-red/10', label: 'Overuse' },
+  PAYMENT_DUE: { icon: Info, color: 'text-energy-blue bg-energy-blue/10', label: 'Payment Due' },
+  alert: { icon: XCircle, color: 'text-energy-red bg-energy-red/10', label: 'Alert' },
+  warning: { icon: AlertTriangle, color: 'text-energy-amber bg-energy-amber/10', label: 'Warning' },
+  info: { icon: Info, color: 'text-energy-blue bg-energy-blue/10', label: 'Info' },
+  success: { icon: CheckCircle, color: 'text-energy-green bg-energy-green/10', label: 'Success' },
 };
 
-const typeColors = {
-  alert: 'text-energy-red bg-energy-red/10',
-  warning: 'text-energy-amber bg-energy-amber/10',
-  info: 'text-energy-blue bg-energy-blue/10',
-  success: 'text-energy-green bg-energy-green/10',
-};
-
-// Mock notifications for local testing
-function mockNotifications() {
-  return [
-    {
-      id: 1,
-      type: 'alert',
-      title: 'System Alert',
-      description: 'Critical issue detected in subsystem.',
-      is_read: false,
-    },
-    {
-      id: 2,
-      type: 'info',
-      title: 'Update Available',
-      description: 'New version of the dashboard is ready.',
-      is_read: false,
-    },
-    {
-      id: 3,
-      type: 'success',
-      title: 'Backup Completed',
-      description: 'All data has been backed up successfully.',
-      is_read: true,
-    },
-  ];
-}
+const FALLBACK = [
+  { id: 'f1', type: 'success', title: 'System Online', message: 'All energy systems are operational.', isResolved: true },
+  { id: 'f2', type: 'info', title: 'Dashboard Ready', message: 'Connect to backend to see live alerts.', isResolved: false },
+];
 
 export default function NotificationsPanel() {
-  const [notifications, setNotifications] = useState([]);
+  const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Simulate async load
-    setTimeout(() => {
-      setNotifications(mockNotifications());
-      setLoading(false);
-    }, 1000);
-  }, []);
-
-  const markRead = (id) => {
-    setNotifications(prev =>
-      prev.map(n => (n.id === id ? { ...n, is_read: true } : n))
-    );
+  const load = () => {
+    setLoading(true);
+    apiClient.get('/alerts')
+      .then((res) => setAlerts(res.data || []))
+      .catch(() => setAlerts(FALLBACK))
+      .finally(() => setLoading(false));
   };
 
-  const unread = notifications.filter(n => !n.is_read).length;
+  useEffect(() => { load(); }, []);
+
+  const resolve = (id) => {
+    apiClient.patch(`/alerts/${id}/resolve`, {})
+      .then(() => setAlerts(prev => prev.map(a => a.id === id ? { ...a, isResolved: true } : a)))
+      .catch(() => setAlerts(prev => prev.map(a => a.id === id ? { ...a, isResolved: true } : a)));
+  };
+
+  const unread = alerts.filter(a => !a.isResolved).length;
 
   return (
     <div className="bg-card rounded-2xl border border-border/50 h-[400px] flex flex-col">
       <div className="p-4 border-b border-border/50 flex items-center gap-2">
         <Bell className="h-5 w-5 text-accent" />
-        <h2 className="font-heading font-semibold text-lg">Notifications</h2>
+        <h2 className="font-heading font-semibold text-lg">Alerts</h2>
         {unread > 0 && (
-          <span className="ml-auto inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+          <span className="ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-bold bg-energy-red text-white">
             {unread}
           </span>
         )}
+        <Button variant="ghost" size="icon" onClick={load} className="ml-auto h-7 w-7 rounded-lg">
+          <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
+        </Button>
       </div>
-      <div className="p-4 overflow-y-auto flex-1">
+
+      <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-muted-foreground">Loading notifications...</p>
-          </div>
-        ) : notifications.length === 0 ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-muted-foreground">No notifications to display.</p>
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-16 rounded-xl bg-secondary animate-pulse" />
+          ))
+        ) : alerts.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full gap-2 text-muted-foreground">
+            <CheckCircle className="h-8 w-8 text-energy-green" />
+            <p className="text-sm">No active alerts</p>
           </div>
         ) : (
-          <ul className="space-y-4">
-            {notifications.map(n => {
-              const Icon = typeIcons[n.type];
-              return (
-                <li key={n.id} className={`p-4 rounded-lg ${typeColors[n.type]}`}>
-                  <div className="flex items-start gap-3">
-                    <Icon className="h-5 w-5 flex-shrink-0 mt-0.5" />
-                    <div className="flex-1">
-                      <h3 className="font-heading font-semibold text-lg">{n.title}</h3>
-                      <p className="text-sm text-muted-foreground">{n.description}</p>
-                    </div>
-                    {!n.is_read && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => markRead(n.id)}
-                        className="ml-auto"
-                      >
-                        Mark as Read
-                      </Button>
-                    )}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+          alerts.map((alert) => {
+            const meta = typeMap[alert.type] || typeMap.info;
+            const Icon = meta.icon;
+            return (
+              <div key={alert.id} className={`flex items-start gap-3 p-3 rounded-xl ${meta.color} ${alert.isResolved ? 'opacity-50' : ''}`}>
+                <Icon className="h-4 w-4 shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold leading-tight">{alert.title || meta.label}</p>
+                  <p className="text-xs mt-0.5 opacity-80 line-clamp-2">{alert.message}</p>
+                </div>
+                {!alert.isResolved && (
+                  <button onClick={() => resolve(alert.id)}
+                    className="text-xs shrink-0 underline opacity-70 hover:opacity-100 transition-opacity">
+                    Resolve
+                  </button>
+                )}
+              </div>
+            );
+          })
         )}
       </div>
     </div>
   );
 }
-

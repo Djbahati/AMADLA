@@ -1,17 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Zap, Sun, Moon } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, Zap, Sun, Moon, LogOut, LogIn, User } from 'lucide-react';
 import { Button } from '@/component/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/context/AuthContext';
 
 const navLinks = [
   { label: 'Home', path: '/' },
   { label: 'About', path: '/about' },
   { label: 'Energy Systems', path: '/energy-systems' },
   { label: 'Dashboard', path: '/dashboard' },
-  { label: 'Partners', path: '/partners' },
+  { label: 'Partners', path: '/partner' },
   { label: 'Contact', path: '/contact' },
-  { label: 'Support', path: '/support' },
+  { label: 'Support', path: '/energy-support' },
 ];
 
 export default function Navbar() {
@@ -19,6 +20,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
   const location = useLocation();
+  const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -26,9 +29,16 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  useEffect(() => { setIsOpen(false); }, [location.pathname]);
+
   const toggleDark = () => {
     document.documentElement.classList.toggle('dark');
     setDark(!dark);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
   };
 
   return (
@@ -73,6 +83,28 @@ export default function Navbar() {
             <Button variant="ghost" size="icon" onClick={toggleDark} className="rounded-full">
               {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
+
+            {isAuthenticated ? (
+              <div className="hidden lg:flex items-center gap-2">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-secondary text-sm">
+                  <User className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="font-medium max-w-[120px] truncate">{user?.fullName || user?.email}</span>
+                  <span className="text-xs px-1.5 py-0.5 rounded-md bg-accent/10 text-accent font-medium">{user?.role}</span>
+                </div>
+                <Button variant="ghost" size="sm" onClick={handleLogout} className="rounded-xl gap-1.5 text-muted-foreground hover:text-destructive">
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <Link to="/login" className="hidden lg:flex">
+                <Button size="sm" className="rounded-xl gap-1.5 bg-accent text-accent-foreground hover:bg-accent/90">
+                  <LogIn className="h-4 w-4" />
+                  Sign In
+                </Button>
+              </Link>
+            )}
+
             <Button variant="ghost" size="icon" className="lg:hidden rounded-full" onClick={() => setIsOpen(!isOpen)}>
               {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
@@ -93,7 +125,6 @@ export default function Navbar() {
                 <Link
                   key={link.path}
                   to={link.path}
-                  onClick={() => setIsOpen(false)}
                   className={`block px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                     location.pathname === link.path
                       ? 'bg-accent/10 text-accent'
@@ -103,6 +134,23 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+              <div className="pt-2 border-t border-border mt-2">
+                {isAuthenticated ? (
+                  <>
+                    <div className="px-4 py-2 text-sm text-muted-foreground">
+                      Signed in as <span className="font-medium text-foreground">{user?.email}</span>
+                    </div>
+                    <button onClick={handleLogout}
+                      className="w-full text-left px-4 py-3 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors flex items-center gap-2">
+                      <LogOut className="h-4 w-4" /> Logout
+                    </button>
+                  </>
+                ) : (
+                  <Link to="/login" className="block px-4 py-3 rounded-lg text-sm font-medium bg-accent/10 text-accent">
+                    Sign In
+                  </Link>
+                )}
+              </div>
             </div>
           </motion.div>
         )}

@@ -154,6 +154,17 @@ class APIClient {
   }
 
   /**
+   * PATCH request
+   */
+  patch(endpoint, body, options = {}) {
+    return this.request(endpoint, {
+      ...options,
+      method: "PATCH",
+      body: JSON.stringify(body),
+    });
+  }
+
+  /**
    * DELETE request
    */
   delete(endpoint, options = {}) {

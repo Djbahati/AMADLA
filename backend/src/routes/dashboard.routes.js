@@ -5,6 +5,7 @@ import { asyncHandler } from "../helpers/asyncHandler.js";
 
 const router = Router();
 
+router.get("/summary", authenticate, authorize("ADMIN", "OPERATOR"), asyncHandler(getAdminSummary));
 router.get("/", authenticate, authorize("ADMIN", "OPERATOR"), asyncHandler(getAdminSummary));
 
 export default router;
