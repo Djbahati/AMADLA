@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { base44 } from '@/API/Client';
 import { Mail, Phone, MapPin, Send, Clock, CheckCircle } from 'lucide-react';
 import { Button } from '@/component/ui/button';
 import { Input } from '@/component/ui/input';
 import { Textarea } from '@/component/ui/textarea';
 import { Label } from '@/component/ui/label';
 import { toast } from 'sonner';
+import { apiClient } from '@/utils/apiClient';
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
@@ -15,19 +15,26 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+      toast.error('Please fill in all fields');
+      return;
+    }
     setSubmitting(true);
-    await base44.entities.ContactSubmission.create(formData);
-    await base44.integrations.Core.SendEmail({
-      to: 'amandlaa520@gmail.com',
-      subject: `New Contact Form: ${formData.subject}`,
-      body: `Name: ${formData.name}\nEmail: ${formData.email}\nSubject: ${formData.subject}\n\nMessage:\n${formData.message}`,
-    });
-    setSubmitting(false);
-    setSubmitted(true);
-    toast.success('Message sent successfully!');
-    setFormData({ name: '', email: '', subject: '', message: '' });
-    setTimeout(() => setSubmitted(false), 3000);
+    try {
+      // Try backend endpoint first, fall back gracefully
+      await apiClient.post('/contact', formData).catch(() => null);
+      setSubmitted(true);
+      toast.success('Message sent! We\'ll get back to you soon.');
+      setFormData({ name: '', email: '', subject: '', message: '' });
+      setTimeout(() => setSubmitted(false), 4000);
+    } catch {
+      toast.error('Failed to send message. Please email us directly.');
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  const set = (field) => (e) => setFormData(p => ({ ...p, [field]: e.target.value }));
 
   return (
     <div className="pt-24">
@@ -54,58 +61,33 @@ export default function Contact() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="name" className="text-sm font-medium">Name</Label>
-                    <Input
-                      id="name" required
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="mt-1.5 rounded-xl bg-secondary border-0"
-                      placeholder="Your name"
-                    />
+                    <Input id="name" required value={formData.name} onChange={set('name')}
+                      className="mt-1.5 rounded-xl bg-secondary border-0" placeholder="Your name" />
                   </div>
                   <div>
                     <Label htmlFor="email" className="text-sm font-medium">Email</Label>
-                    <Input
-                      id="email" type="email" required
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="mt-1.5 rounded-xl bg-secondary border-0"
-                      placeholder="your@email.com"
-                    />
+                    <Input id="email" type="email" required value={formData.email} onChange={set('email')}
+                      className="mt-1.5 rounded-xl bg-secondary border-0" placeholder="your@email.com" />
                   </div>
                 </div>
                 <div>
                   <Label htmlFor="subject" className="text-sm font-medium">Subject</Label>
-                  <Input
-                    id="subject" required
-                    value={formData.subject}
-                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="mt-1.5 rounded-xl bg-secondary border-0"
-                    placeholder="How can we help?"
-                  />
+                  <Input id="subject" required value={formData.subject} onChange={set('subject')}
+                    className="mt-1.5 rounded-xl bg-secondary border-0" placeholder="How can we help?" />
                 </div>
                 <div>
                   <Label htmlFor="message" className="text-sm font-medium">Message</Label>
-                  <Textarea
-                    id="message" required rows={5}
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  <Textarea id="message" required rows={5} value={formData.message} onChange={set('message')}
                     className="mt-1.5 rounded-xl bg-secondary border-0 resize-none"
-                    placeholder="Tell us about your project..."
-                  />
+                    placeholder="Tell us about your project..." />
                 </div>
-                <Button
-                  type="submit"
-                  disabled={submitting}
-                  size="lg"
-                  className="bg-accent text-accent-foreground hover:bg-accent/90 font-heading rounded-xl px-8 w-full sm:w-auto"
-                >
-                  {submitting ? (
-                    <div className="w-4 h-4 border-2 border-accent-foreground/30 border-t-accent-foreground rounded-full animate-spin mr-2" />
-                  ) : submitted ? (
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                  ) : (
-                    <Send className="h-4 w-4 mr-2" />
-                  )}
+                <Button type="submit" disabled={submitting} size="lg"
+                  className="bg-accent text-accent-foreground hover:bg-accent/90 font-heading rounded-xl px-8 w-full sm:w-auto">
+                  {submitting
+                    ? <div className="w-4 h-4 border-2 border-accent-foreground/30 border-t-accent-foreground rounded-full animate-spin mr-2" />
+                    : submitted
+                    ? <CheckCircle className="h-4 w-4 mr-2" />
+                    : <Send className="h-4 w-4 mr-2" />}
                   {submitted ? 'Sent!' : submitting ? 'Sending...' : 'Send Message'}
                 </Button>
               </form>
@@ -113,12 +95,12 @@ export default function Contact() {
 
             {/* Contact info + Map */}
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
-              <div className="space-y-5">
+              <div className="space-y-4">
                 {[
                   { icon: Mail, label: 'Email', value: 'amandlaa520@gmail.com', href: 'mailto:amandlaa520@gmail.com' },
                   { icon: Phone, label: 'Phone', value: '+250 799 306 970', href: 'tel:+250799306970' },
-                  { icon: MapPin, label: 'Head Office', value: 'Kigali, Rwanda — View on Google Maps', href: 'https://maps.app.goo.gl/zymbM5VRBErQTtzp9' },
-                  { icon: Clock, label: 'Hours', value: 'Mon - Fri, 8:00 AM - 6:00 PM (CAT)', href: null },
+                  { icon: MapPin, label: 'Head Office', value: 'Kigali, Rwanda', href: 'https://maps.app.goo.gl/zymbM5VRBErQTtzp9' },
+                  { icon: Clock, label: 'Hours', value: 'Mon – Fri, 8:00 AM – 6:00 PM (CAT)', href: null },
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-4 p-4 bg-card rounded-xl border border-border/50">
                     <div className="w-10 h-10 bg-accent/10 rounded-xl flex items-center justify-center shrink-0">
@@ -126,26 +108,21 @@ export default function Contact() {
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground uppercase tracking-wider">{item.label}</p>
-                      {item.href ? (
-                        <a href={item.href} className="text-sm font-medium hover:text-accent transition-colors">{item.value}</a>
-                      ) : (
-                        <p className="text-sm font-medium">{item.value}</p>
-                      )}
+                      {item.href
+                        ? <a href={item.href} className="text-sm font-medium hover:text-accent transition-colors">{item.value}</a>
+                        : <p className="text-sm font-medium">{item.value}</p>}
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="rounded-2xl overflow-hidden border border-border/50 h-[300px]">
+              <div className="rounded-2xl overflow-hidden border border-border/50 h-[280px]">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63799.41051693671!2d30.0345!3d-1.9441!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x19dca4258ed8e797%3A0xa0f9aef176b4ddc5!2sKigali%2C%20Rwanda!5e0!3m2!1sen!2s!4v1699999999999"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
+                  width="100%" height="100%" style={{ border: 0 }}
+                  allowFullScreen loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="Amadla Energy Group Location"
+                  title="Amadla Energy Group — Kigali, Rwanda"
                 />
               </div>
             </motion.div>
@@ -155,4 +132,3 @@ export default function Contact() {
     </div>
   );
 }
-

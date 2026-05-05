@@ -1,6 +1,13 @@
 import { motion } from 'framer-motion';
 
 export default function LeadershipCard({ name, role, image, delay = 0 }) {
+  const initials = name
+    .split(' ')
+    .filter(Boolean)
+    .slice(-2)
+    .map((w) => w[0])
+    .join('');
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -9,8 +16,17 @@ export default function LeadershipCard({ name, role, image, delay = 0 }) {
       transition={{ delay }}
       className="group text-center"
     >
-      <div className="relative w-40 h-40 mx-auto mb-5 rounded-2xl overflow-hidden">
-        <img src={image} alt={name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+      <div className="relative w-40 h-40 mx-auto mb-5 rounded-2xl overflow-hidden bg-accent/10 flex items-center justify-center">
+        {image ? (
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+          />
+        ) : (
+          <span className="font-heading text-4xl font-bold text-accent">{initials}</span>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
       <h3 className="font-heading font-semibold text-lg">{name}</h3>
