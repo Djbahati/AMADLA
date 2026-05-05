@@ -19,7 +19,7 @@ export default function Footer() {
           <div>
             <h4 className="font-heading font-semibold mb-4">Quick Links</h4>
             <div className="space-y-2">
-              {['About', 'Energy Systems', 'Dashboard', 'Partners', 'Contact'].map((link) => (
+              {['About', 'Projects', 'Energy Systems', 'Quote', 'Dashboard', 'Partners', 'Contact'].map((link) => (
                 <Link
                   key={link}
                   to={`/${link.toLowerCase().replace(' ', '-')}`}
@@ -40,7 +40,7 @@ export default function Footer() {
               </a>
               <a href="tel:+250799306970" className="flex items-center gap-2 text-sm text-primary-foreground/70 hover:text-accent transition-colors">
                 <Phone className="h-4 w-4 shrink-0" />
-                +250 799 306 970
+                +250 799 306970
               </a>
               <div className="flex items-center gap-2 text-sm text-primary-foreground/70">
                 <MapPin className="h-4 w-4 shrink-0" />

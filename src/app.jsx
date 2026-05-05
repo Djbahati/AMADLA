@@ -7,6 +7,8 @@ import Home from '@/page/home';
 import About from '@/page/about';
 import Contact from '@/page/contact';
 import Partner from '@/page/partner';
+import Projects from '@/page/projects';
+import Quote from '@/page/quote';
 import Login from '@/page/login';
 import Register from '@/page/register';
 import Dashboard from '@/page/dashboard';
@@ -26,6 +28,8 @@ export default function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/quote" element={<Quote />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/partner" element={<Partner />} />
           </Route>

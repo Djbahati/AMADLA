@@ -28,6 +28,14 @@ export async function listProjects(req, res) {
   return ok(res, projects, "Projects retrieved");
 }
 
+export async function listProjectsPublic(req, res) {
+  const projects = await prisma.project.findMany({
+    where: { isActive: true },
+    orderBy: { createdAt: "desc" },
+  });
+  return ok(res, projects, "Public projects retrieved");
+}
+
 export async function assignUserToProject(req, res) {
   const { projectId } = req.params;
   const payload = z.object({ userId: z.string().min(1) }).safeParse(req.body);

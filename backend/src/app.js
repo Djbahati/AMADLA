@@ -5,6 +5,8 @@ import { env } from "./config/env.js";
 import { requestLogger } from "./middleware/logger.js";
 import { apiLimiter } from "./middleware/rateLimit.js";
 import { errorHandler, notFound } from "./middleware/error.js";
+import { graphqlHTTP } from "express-graphql";
+import { schema, root } from "./graphql/schema.js";
 import authRoutes from "./routes/auth.routes.js";
 import projectRoutes from "./routes/project.routes.js";
 import usageRoutes from "./routes/usage.routes.js";
@@ -12,6 +14,8 @@ import billingRoutes from "./routes/billing.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import alertRoutes from "./routes/alert.routes.js";
 import reportRoutes from "./routes/report.routes.js";
+import contactRoutes from "./routes/contact.routes.js";
+import quoteRoutes from "./routes/quote.routes.js";
 
 const app = express();
 
@@ -22,8 +26,11 @@ app.use(requestLogger);
 app.use(apiLimiter);
 
 app.get("/api/health", (req, res) => res.json({ status: "ok" }));
+app.use("/api/graphql", graphqlHTTP({ schema, rootValue: root, graphiql: env.nodeEnv !== "production" }));
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/quote", quoteRoutes);
+app.use("/api/contact", contactRoutes);
 app.use("/api/usage", usageRoutes);
 app.use("/api/billing", billingRoutes);
 app.use("/api/dashboard", dashboardRoutes);

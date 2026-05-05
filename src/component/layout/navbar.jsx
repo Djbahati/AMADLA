@@ -8,11 +8,12 @@ import { useAuth } from '@/context/AuthContext';
 const navLinks = [
   { label: 'Home', path: '/' },
   { label: 'About', path: '/about' },
+  { label: 'Projects', path: '/projects' },
   { label: 'Energy Systems', path: '/energy-systems' },
+  { label: 'Quote', path: '/quote' },
   { label: 'Dashboard', path: '/dashboard' },
   { label: 'Partners', path: '/partner' },
   { label: 'Contact', path: '/contact' },
-  { label: 'Support', path: '/energy-support' },
 ];
 
 export default function Navbar() {

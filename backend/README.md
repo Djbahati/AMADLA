@@ -20,8 +20,11 @@
 - `POST /api/auth/register` - register customer account
 - `POST /api/auth/login` - login and receive JWT
 - `GET /api/auth/me` - get authenticated profile
-- `GET/POST /api/projects` - list/create projects
+- `GET /api/projects/public` - list active projects for public browsing
+- `GET/POST /api/projects` - list/create projects (authenticated)
 - `POST /api/projects/:projectId/assign` - assign user to project
+- `POST /api/quote/recommend` - quote recommendation based on usage
+- `POST /api/contact` - submit a contact request
 - `GET/POST /api/usage` - list/record usage
 - `GET/POST /api/billing/bills` - list/generate bills
 - `GET/POST /api/billing/payments` - payment history/pay bill (partial supported)
@@ -30,6 +33,7 @@
 - `PATCH /api/alerts/:id/resolve` - resolve alert
 - `GET /api/reports/usage.csv` - export usage report (CSV)
 - `GET /api/reports/revenue.pdf` - export revenue report (PDF)
+- `POST /api/graphql` - GraphQL query endpoint for projects
 
 ## Security
 
