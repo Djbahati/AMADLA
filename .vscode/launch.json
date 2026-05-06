@@ -8,7 +8,7 @@
       "type": "chrome",
       "request": "launch",
       "name": "Launch Chrome against localhost",
-      "url": "http://localhost:5173",
+      "url": "http://localhost:5000",
       "webRoot": "${workspaceFolder}",
       "sourceMapPathOverrides": {
         "webpack:///src/*": "${webRoot}/src/*"
@@ -55,7 +55,7 @@
       ],
       "serverReadyAction": {
         "pattern": "Backend server running on port 5173",
-        "uriFormat": "http://localhost:5173",
+        "uriFormat": "http://localhost:5000",
         "action": "debugWithChrome"
       }
     }
