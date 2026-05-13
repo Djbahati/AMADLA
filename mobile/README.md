@@ -1,6 +1,6 @@
-# Amadla Energy Mobile Prototype
+# Amandla Energy Mobile Prototype
 
-This folder contains a lightweight React Native / Expo mobile app skeleton for Amadla Energy.
+This folder contains a lightweight React Native / Expo mobile app skeleton for Amandla Energy.
 
 ## Features
 - Home screen with energy transformation messaging

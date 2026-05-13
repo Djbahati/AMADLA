@@ -1,3 +1,4 @@
+import 'react-native-gesture-handler';
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -9,7 +10,7 @@ const Stack = createNativeStackNavigator();
 function HomeScreen({ navigation }) {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Amadla Energy</Text>
+      <Text style={styles.title}>Amandla Energy</Text>
       <Text style={styles.subtitle}>Clean energy solutions for African communities.</Text>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Quote')}>
         <Text style={styles.buttonText}>Request a Quote</Text>
@@ -44,7 +45,7 @@ export default function App() {
     <NavigationContainer>
       <StatusBar style="light" />
       <Stack.Navigator screenOptions={{ headerStyle: styles.header, headerTintColor: '#E4F4FD' }}>
-        <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Amadla Mobile' }} />
+        <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Amandla Mobile' }} />
         <Stack.Screen name="Projects" component={ProjectsScreen} options={{ title: 'Projects' }} />
         <Stack.Screen name="Quote" component={QuoteScreen} options={{ title: 'Get a Quote' }} />
       </Stack.Navigator>
