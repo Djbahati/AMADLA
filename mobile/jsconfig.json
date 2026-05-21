@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "target": "ES2020",
+    "jsx": "react-native",
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "checkJs": false,
+    "skipLibCheck": true
+  },
+  "include": [
+    "App.js",
+    "**/*.js",
+    "**/*.jsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
