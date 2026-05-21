@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native';
+import SupportScreen from './screens/SupportScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +18,9 @@ function HomeScreen({ navigation }) {
       </TouchableOpacity>
       <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate('Projects')}>
         <Text style={styles.secondaryButtonText}>View Projects</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate('Support')}>
+        <Text style={styles.secondaryButtonText}>Get Support</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -48,6 +52,7 @@ export default function App() {
         <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Amandla Mobile' }} />
         <Stack.Screen name="Projects" component={ProjectsScreen} options={{ title: 'Projects' }} />
         <Stack.Screen name="Quote" component={QuoteScreen} options={{ title: 'Get a Quote' }} />
+        <Stack.Screen name="Support" component={SupportScreen} options={{ title: 'Support' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
