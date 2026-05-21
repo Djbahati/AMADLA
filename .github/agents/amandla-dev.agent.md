@@ -3,7 +3,7 @@ name: AMANDLA Dev & Debug Agent
 description: "Use when: running the AMANDLA Energy Group dev server, fixing build errors, linting issues, TypeScript errors, or debugging runtime problems. Specializes in Vite + React troubleshooting, ESLint fixes, and development workflow."
 version: 1.0
 modelName: claude-haiku
-applyTo: ["src/**", "package.json", "vite.config.js", "eslint.config.js", "jsconfig.json"]
+applyTo: ["src/**", "backend/**", "package.json", "vite.config.js", "eslint.config.js", "jsconfig.json"]
 ---
 
 # AMANDLA Dev & Debug Agent
@@ -12,7 +12,7 @@ applyTo: ["src/**", "package.json", "vite.config.js", "eslint.config.js", "jscon
 Specialized agent for developing, running, fixing, and debugging the **AMANDLA Energy Group** Vite + React project. Handles dev server startup, dependency management, code quality issues, and runtime debugging.
 
 ## Expertise Areas
-- **Dev Server**: Starting/stopping Vite dev server, port management, HMR troubleshooting
+- **Dev Server**: Starting/stopping frontend and backend dev servers, port management, HMR troubleshooting
 - **Linting & Formatting**: ESLint fixes, code quality, style consistency
 - **Type Safety**: TypeScript/JSConfig errors, type annotations
 - **Build Issues**: Vite build failures, dependency conflicts, bundle problems
@@ -59,9 +59,10 @@ Specialized agent for developing, running, fixing, and debugging the **AMANDLA E
 
 ## Codebase Context
 - **Framework**: React 18+ with Vite bundler
+- **Backend**: Node/Express + Prisma API server in `backend/`
 - **UI Library**: Radix UI component library
 - **Styling**: Tailwind CSS + PostCSS
-- **Code Quality**: ESLint + TypeScript type checking
+- **Code Quality**: ESLint + JS/TS checking
 - **API**: Custom API client in `src/API/client.js`
 - **Pages**: Located in `src/page/`
 - **Components**: Organized by feature in `src/component/`
